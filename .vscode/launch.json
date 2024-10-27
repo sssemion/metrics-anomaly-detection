@@ -1,0 +1,13 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Render plots",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/src/other/plots.py",
+            "console": "integratedTerminal",
+            "python": "${command:python.interpreterPath}"
+        }
+    ]
+}
