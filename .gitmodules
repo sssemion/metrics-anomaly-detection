@@ -1,0 +1,3 @@
+[submodule "src/ml/NAB"]
+	path = src/ml/NAB
+	url = https://github.com/numenta/NAB
