@@ -1,0 +1,6 @@
+Cython
+pandas
+simplejson
+boto3
+scikit-learn
+plotly
