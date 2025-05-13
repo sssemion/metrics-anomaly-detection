@@ -1,0 +1,19 @@
+prometheus_url: http://localhost:9090
+model_path: lstm-ae-32-model-bs256.h5
+window_size: 32
+exporter_port: 8042
+scrape_interval: 30
+initial_offset: 600  # кол-во секунд для калибровки порогов после старта детектора
+
+queries:
+  - name: test_wave
+    query: test_wave
+    binarize: false
+    window:
+      hours: 1
+  - name: test_wave_binarized
+    query: test_wave
+    binarize: true
+    threshold: 0.9
+    window:
+      hours: 1

@@ -1,0 +1,15 @@
+metrics:
+  - name: test_wave
+    type: gauge
+    help: "Test periodic wave"
+    profile:
+      type: periodic
+      amplitude: 25
+      period: 600
+      base: 50
+    noise:
+      type: uniform
+      magnitude: 10
+    bounds:
+      min: 0
+      max: 200
