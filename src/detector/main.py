@@ -96,14 +96,14 @@ class AnomalyDetector:
     def _load_model(self) -> Model:
         return load_model(self.config["model_path"])
 
-    def _get_gauge(self, query_name: str, labels: tuple[tuple[str, str], ...]) -> Gauge:
+    def _get_gauge(self, query_name: str, labels: tuple[str, ...]) -> Gauge:
         """Динамически создает метрику при первом появлении комбинации лейблов"""
         # Создаем метрику только если ее еще нет
         if (query_name, labels) not in self.metric_cache:
             metric = Gauge(
                 f"anomaly_detector__{query_name}",
                 "Auto-generated anomaly_score metric",
-                [k for k, _ in labels],
+                labels,
             )
             self.metric_cache[(query_name, labels)] = metric
 
@@ -145,23 +145,18 @@ class AnomalyDetector:
             )
         input_data = np.array(tensors)
         preds = self.model.predict(input_data)
-        mse = np.mean(np.square(input_data - preds), axis=(1 ,2))
-        # mse = mse[:, -1, 0]
+        mse = np.mean(np.square(input_data - preds), axis=(1, 2))
         imse = iter(mse)
         for q, q_metrics in zip(self.config["queries"], metrics, strict=True):
             name = q["name"]
             for q_metric in q_metrics:
                 metric_mse = next(imse)
                 self.mse_history[name].append(metric_mse)
-                q9 = np.quantile(self.mse_history[name], 0.998)
-                q0 = np.quantile(self.mse_history[name], 0.002)
-                iqr = q9 - q0
-                if metric_mse <= q0:
-                    anomaly_score = 0
-                elif metric_mse >= q9:
+                q999 = np.quantile(self.mse_history[name], 0.999)
+                if metric_mse >= q999:
                     anomaly_score = 1
                 else:
-                    anomaly_score = (metric_mse - q0) / (iqr + 1e-6)
+                    anomaly_score = metric_mse / (q999 + 1e-6)
 
                 if q.get("binarize", False):
                     threshold = q.get("threshold", 0.9)
@@ -174,7 +169,7 @@ class AnomalyDetector:
                     logger.info("Waiting for initial offset to pass, set anomaly_score to -1")
                     anomaly_score = -1
 
-                gauge = self._get_gauge(name, tuple(q_metric["labels"].items()))
+                gauge = self._get_gauge(name, tuple(q_metric["labels"].keys()))
                 gauge.labels(**q_metric["labels"]).set(anomaly_score)
 
     def run(self):

@@ -10,10 +10,21 @@ queries:
     query: test_wave
     binarize: false
     window:
-      hours: 1
+      minutes: 30
   - name: test_wave_binarized
     query: test_wave
     binarize: true
     threshold: 0.9
     window:
-      hours: 1
+      minutes: 30
+  - name: scrape_duration
+    query: scrape_duration_seconds
+    binarize: false
+    window:
+      minutes: 30
+  - name: scrape_duration_binarized
+    query: scrape_duration_seconds
+    binarize: true
+    threshold: 0.9
+    window:
+      minutes: 30

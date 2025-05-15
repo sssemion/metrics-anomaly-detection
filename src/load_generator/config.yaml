@@ -4,12 +4,21 @@ metrics:
     help: "Test periodic wave"
     profile:
       type: periodic
-      amplitude: 25
-      period: 600
+      amplitude: 10
+      period: 120
       base: 50
     noise:
       type: uniform
-      magnitude: 10
+      magnitude: 30
     bounds:
       min: 0
-      max: 200
+      max: 100
+  - name: test_noised_4gi
+    type: gauge
+    help: "Test periodic wave"
+    profile:
+      type: constant
+      value: 4294967296 # 4 GiB
+    noise:
+      type: percentage
+      magnitude: 30
